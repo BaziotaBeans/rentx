@@ -77,18 +77,27 @@ export function Home() {
   }
 
   useEffect(() => {
+    let isMounted = true;
+
     async function fetchCars() {
       try {
         const response = await api.get("/cars");
-        setCars(response.data);
+        if (isMounted) {
+          setCars(response.data);
+        }
       } catch (error) {
         console.log(error);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
 
     fetchCars();
+    return () => {
+      isMounted = false;
+    }
   }, []);
 
   // useEffect(() => {
@@ -116,8 +125,8 @@ export function Home() {
       ) : (
         <CarList
           data={cars}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
+          keyExtractor={(item: any) => item.id}
+          renderItem={({ item }: any) => (
             <Car data={item} onPress={() => handleCarDetails(item)} />
           )}
         />
